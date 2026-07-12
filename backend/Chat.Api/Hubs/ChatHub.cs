@@ -2,6 +2,7 @@ using Chat.Api.Data;
 using Chat.Api.Models;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Chat.Api.Hubs;
 
@@ -10,7 +11,7 @@ public class ChatHub : Hub
 {
     private readonly ChatDbContext _db;
 
-    
+
     public ChatHub(ChatDbContext db)
     {
         _db = db;
@@ -27,7 +28,9 @@ public class ChatHub : Hub
 
         var chatMessage = new Message
         {
-            Username = username,
+            UserId = int.Parse(
+                Context.User!.FindFirst(ClaimTypes.NameIdentifier)!.Value
+            ),
             Content = message
         };
 
@@ -37,7 +40,7 @@ public class ChatHub : Hub
 
         await Clients.All.SendAsync(
             "ReceiveMessage",
-            chatMessage.Username,
+            username,
             chatMessage.Content
         );
     }

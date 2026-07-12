@@ -11,12 +11,13 @@ public static class MessageEndpoints
         app.MapGet("/messages", async (ChatDbContext db) =>
         {
             var messages = await db.Messages
+                .Include(m => m.User)
                 .OrderByDescending(m => m.SentAt)
                 .Take(50)
                 .OrderBy(m => m.SentAt)
                 .Select(m => new MessageDto
                 {
-                    Username = m.Username,
+                    Username = m.User.Username,
                     Content = m.Content,
                     SentAt = m.SentAt
                 })

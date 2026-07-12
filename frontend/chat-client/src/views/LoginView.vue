@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { login } from "../api/api";
 import { useAuthStore } from "../stores/auth";
 import { useRouter } from "vue-router";
+import AppButton from "../components/AppButton.vue";
 
 const router = useRouter();
 const auth = useAuthStore();
@@ -48,7 +49,14 @@ async function handleLogin() {
 
     <br>
 
-    <button @click="handleLogin">
+    <AppButton @click="handleLogin">
         Login
-    </button>
+    </AppButton>
+
+    <br>
+
+    <p>
+    Don't have an account?
+    <RouterLink to="/register">Register</RouterLink>
+    </p>
 </template>
