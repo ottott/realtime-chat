@@ -12,3 +12,17 @@
 # OS
 .DS_Store
 Thumbs.db
+
+# .NET
+**/bin/
+**/obj/
+
+# User-specific files
+*.user
+*.suo
+
+# Visual Studio
+.vs/
+
+# Rider
+*.DotSettings.user

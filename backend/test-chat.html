@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SignalR Test</title>
+</head>
+<body>
+
+<h2>Chat Test</h2>
+
+<input id="message" placeholder="Message">
+<button onclick="send()">Send</button>
+
+<div id="messages"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+
+<script>
+
+const connection = new signalR.HubConnectionBuilder()
+    .withUrl("http://localhost:5122/chat")
+    .build();
+
+
+connection.on("ReceiveMessage", (username, message) => {
+    document.getElementById("messages").innerHTML +=
+        `<p>${username}: ${message}</p>`;
+});
+
+
+connection.start()
+    .then(() => console.log("Connected"))
+    .catch(err => console.error(err));
+
+
+function send() {
+    const message = document.getElementById("message").value;
+
+    connection.invoke(
+        "SendMessage",
+        "TestUser",
+        message
+    );
+}
+
+</script>
+
+</body>
+</html>
