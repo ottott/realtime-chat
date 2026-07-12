@@ -16,30 +16,50 @@
 
 <script>
 
-const connection = new signalR.HubConnectionBuilder()
-    .withUrl("http://localhost:5122/chat")
-    .build();
+let token = "";
+let connection = null;
 
+async function login() {
 
-connection.on("ReceiveMessage", (username, message) => {
-    document.getElementById("messages").innerHTML +=
-        `<p>${username}: ${message}</p>`;
-});
+    const response = await fetch("http://localhost:5122/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            email: "test@test.com",
+            password: "testtest"
+        })
+    });
 
+    const data = await response.json();
 
-connection.start()
-    .then(() => console.log("Connected"))
-    .catch(err => console.error(err));
+    token = data.token;
 
+    connection = new signalR.HubConnectionBuilder()
+        .withUrl("http://localhost:5122/chat", {
+            accessTokenFactory: () => token
+        })
+        .build();
+
+    connection.on("ReceiveMessage", (username, message) => {
+        document.getElementById("messages").innerHTML +=
+            `<p>${username}: ${message}</p>`;
+    });
+
+    await connection.start();
+
+    console.log("Connected");
+}
+
+login();
 
 function send() {
+
     const message = document.getElementById("message").value;
 
-    connection.invoke(
-        "SendMessage",
-        "TestUser",
-        message
-    );
+    connection.invoke("SendMessage", message);
+
 }
 
 </script>
